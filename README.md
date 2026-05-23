@@ -89,6 +89,43 @@ timeout.stop()          // 停止轮询
 - **`stop` 后结果不回调**：调用 `stop` 后，正在执行的请求结果不会回调
 - **`setCallback` 动态更新回调**：运行过程中可以替换回调函数
 
+### React Hooks
+
+```ts
+import { createSharedStateHook } from '@azsxdc12356/utils'
+```
+
+#### `createSharedStateHook` — 无需 Provider 的跨组件共享状态
+
+创建一个 hook，多个组件调用同一个 hook 即可共享状态，无需 Context + Provider 包裹。
+
+```tsx
+const useUserInfo = createSharedStateHook({ name: '', age: 0 })
+
+function Header() {
+  const [user, setUser] = useUserInfo()
+  return <Text>{user.name}</Text>
+}
+
+function Editor() {
+  const [user, setUser] = useUserInfo()
+  return (
+    <TextInput
+      value={user.name}
+      onChangeText={(text) => setUser({ ...user, name: text })}
+    />
+  )
+}
+```
+
+**`onlyUpdate` 选项**：只获取 setter 不订阅更新，适合只需要写不需要读的场景（避免不必要的重渲染）。
+
+```tsx
+const [, setUser] = useUserInfo({ onlyUpdate: true })
+```
+
+**解决痛点**：跨组件共享状态通常需要引入 Context + Provider 或状态管理库，对于简单场景太重了。`createSharedStateHook` 在模块顶层创建，组件直接调用即可共享，无需包裹 Provider。
+
 ## License
 
 MIT

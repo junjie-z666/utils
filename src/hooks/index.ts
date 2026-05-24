@@ -1,0 +1,1 @@
+export { createSharedStateHook } from './sharedHook'

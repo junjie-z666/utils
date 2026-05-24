@@ -57,7 +57,7 @@ const interval = new AsyncInterval<string, Data>(
   (result) => console.log(result)
 )
 
-interval.start('param')  // 立即执行一次，之后每 3s 执行一次
+interval.start('param')  // 立即执行一次，之后每 3s 检查一次，完成了再执行，不完成跳过。
 // ...
 interval.stop()          // 停止轮询，正在执行的请求结果不会回调
 ```
@@ -89,6 +89,9 @@ import { createSharedStateHook } from '@azsxdc12356/utils'
 
 创建一个 hook，多个组件调用同一个 hook 即可共享状态，无需 Context + Provider 包裹。
 
+**解决痛点**：跨组件共享状态通常需要引入 Context + Provider 或状态管理库，对于简单场景太重了。`createSharedStateHook` 在模块顶层创建，组件直接调用即可共享，无需包裹 Provider。
+
+
 ```tsx
 const useUserInfo = createSharedStateHook({ name: '', age: 0 })
 
@@ -114,7 +117,6 @@ function Editor() {
 const [, setUser] = useUserInfo({ onlyUpdate: true })
 ```
 
-**解决痛点**：跨组件共享状态通常需要引入 Context + Provider 或状态管理库，对于简单场景太重了。`createSharedStateHook` 在模块顶层创建，组件直接调用即可共享，无需包裹 Provider。
 
 ### 工具函数
 
@@ -125,6 +127,9 @@ import { createCanceledPromise, ConcurrencyQueue, createSinglePromise } from '@a
 #### `createCanceledPromise` — 可取消的 Promise
 
 给 Promise 加上 cancel 方法，调用后返回的 promise 会 reject 并携带 `{ canceled: true }`，用户可据此区分取消和正常错误。
+
+**解决痛点**：原生 Promise 一旦创建无法取消。网络请求、页面跳转等场景需要中断正在进行的异步操作，否则结果回来后会更新已不存在的 UI 或引发报错。
+
 
 ```ts
 const cancelable = createCanceledPromise(fetchData(), () => abortController.abort())
@@ -143,11 +148,13 @@ try {
 cancelable.cancel()
 ```
 
-**解决痛点**：原生 Promise 一旦创建无法取消。网络请求、页面跳转等场景需要中断正在进行的异步操作，否则结果回来后会更新已不存在的 UI 或引发报错。
 
 #### `ConcurrencyQueue` — 并发控制队列
 
 控制同时执行的任务数量，超出并发上限的任务排队等待，完成一个自动执行下一个。
+
+**解决痛点**：批量发起网络请求（上传文件、批量下载）时，不加控制会瞬间创建大量并发连接，导致浏览器卡顿或服务端拒绝。ConcurrencyQueue 让并发数始终在可控范围内。
+
 
 ```ts
 const queue = new ConcurrencyQueue('upload', 3)
@@ -167,22 +174,21 @@ queue.removeItem('file2')
 queue.removeAll()
 ```
 
-**解决痛点**：批量发起网络请求（上传文件、批量下载）时，不加控制会瞬间创建大量并发连接，导致浏览器卡顿或服务端拒绝。ConcurrencyQueue 让并发数始终在可控范围内。
 
 #### `createSinglePromise` — 单例 Promise
 
 多次调用 `get()` 时，如果上一次还没完成，直接返回正在执行的 promise，不会重复执行。
 
+**解决痛点**：多个模块同时请求同一份配置/资源，不加控制会发出多个重复请求。createSinglePromise 保证同一时刻只有一个请求，所有调用者共享同一个 promise。
+
+
 ```ts
-const single = createSinglePromise(() => fetchConfig())
+const singleGetConfig = createSinglePromise(() => fetchConfig())
 
 // 多处同时调用，只会发一次请求
-const config1 = await single.get()
-const config2 = await single.get()
+const config1Promise = singleGetConfig.get()
+const config2Promise = singleGetConfig.get()
 ```
-
-**解决痛点**：多个模块同时请求同一份配置/资源，不加控制会发出多个重复请求。createSinglePromise 保证同一时刻只有一个请求在飞，所有调用者共享同一个 promise。
-
 ## License
 
 MIT

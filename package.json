@@ -1,6 +1,6 @@
 {
   "name": "@azsxdc12356/utils",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "TypeScript utility functions and React Hooks",
   "type": "module",
   "exports": {
@@ -26,7 +26,8 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "pushToNpm": "npm publish --access public --registry https://registry.npmjs.org"
   },
   "peerDependencies": {
     "react": ">=18.0.0"
@@ -47,20 +48,24 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/junjie-z666/utils.git"
+  },
+  "homepage": "https://github.com/junjie-z666/utils",
+  "bugs": {
+    "url": "https://github.com/junjie-z666/utils/issues"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.0.0",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.15",
-    "@vitejs/plugin-react": "^6.0.2",
-    "eslint": "^10.4.0",
-    "jsdom": "^29.1.1",
+    "@vitejs/plugin-react": "^4.3.0",
+    "eslint": "^9.0.0",
+    "jsdom": "^25.0.0",
     "prettier": "^3.8.3",
     "react": "^19.2.6",
     "tsup": "^8.5.1",
-    "typescript": "^6.0.3",
+    "typescript": "^5.7.0",
     "typescript-eslint": "^8.59.4",
-    "vitest": "^4.1.7"
+    "vitest": "^3.0.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@azsxdc12356/utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "TypeScript utility functions and React Hooks",
   "type": "module",
   "types": "./dist/index.d.ts",

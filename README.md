@@ -8,6 +8,18 @@ TypeScript 工具函数和 React Hooks 集合。
 npm install @azsxdc12356/utils
 ```
 
+## 目录
+
+| 工具 | 类型 | 简介 |
+| --- | --- | --- |
+| `AsyncOnce` | 异步轮询器 | 快速连续调用同一异步操作，只回调最后一次结果，丢弃过期结果 |
+| `AsyncInterval` | 异步轮询器 | 固定间隔轮询，上次未完成则跳过本次，不会并发堆积 |
+| `AsyncTimeout` | 异步轮询器 | 上次完成后等待固定间隔再执行，请求之间不重叠 |
+| `createSharedStateHook` | React Hook | 无需 Provider 的跨组件共享状态，多组件调用同一 hook 即可共享 |
+| `createCanceledPromise` | 工具函数 | 给 Promise 加 cancel 方法，可主动取消并区分取消与错误 |
+| `ConcurrencyQueue` | 工具函数 | 并发控制队列，限制同时执行的任务数，超出排队等待 |
+| `createSinglePromise` | 工具函数 | 单例 Promise，多次调用共享同一个正在执行的 promise，不重复执行 |
+
 ## 使用
 
 ### 异步轮询器

@@ -19,6 +19,7 @@ npm install @azsxdc12356/utils
 | `createCanceledPromise` | 工具函数 | 给 Promise 加 cancel 方法，可主动取消并区分取消与错误 |
 | `ConcurrencyQueue` | 工具函数 | 并发控制队列，限制同时执行的任务数，超出排队等待 |
 | `createSinglePromise` | 工具函数 | 单例 Promise，多次调用共享同一个正在执行的 promise，不重复执行 |
+| `setupMock` | Mock 中间件 | Vue CLI devServer mock 中间件，基于目录结构自动发现接口，支持热更新和空文件自动抓取 |
 
 ## 使用
 
@@ -201,6 +202,63 @@ const singleGetConfig = createSinglePromise(() => fetchConfig())
 const config1Promise = singleGetConfig.get()
 const config2Promise = singleGetConfig.get()
 ```
+
+### Mock 中间件
+
+```ts
+import { setupMock } from '@azsxdc12356/utils/mockMiddleWare'
+```
+
+#### `setupMock` — Vue CLI devServer mock 中间件
+
+供各 app 共用的 mock 中间件，基于目录结构自动发现 mock 接口文件，支持文件监听热更新和空文件自动抓取真实数据。
+
+**启用方式**：设置环境变量 `VUE_APP_MOCK=true` 即可启用，未设置时所有请求正常走代理。
+
+```bash
+VUE_APP_MOCK=true vue-cli-service serve
+```
+
+**在 vue.config.js 中接入**：
+
+```js
+const { setupMock } = require("../mock")
+
+module.exports = {
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://example.com",
+        changeOrigin: true,
+      },
+    },
+    onBeforeSetupMiddleware(devServer) {
+      setupMock(devServer, __dirname, ["/api"])
+    },
+  },
+}
+```
+
+参数说明：
+- `devServer` — webpack-dev-server 实例
+- `appRoot` — app 根目录绝对路径，用于定位 `./mock` 子目录
+- `proxyPaths` — 需要拦截的接口路径前缀数组，顺序必须与 `devServer.proxy` 配置一致
+
+**Mock 文件约定**：在 app 的 `mock/` 目录下按接口路径创建 `.json` 文件，目录层级 = 接口路径层级。
+
+```
+mock/api/xxx/yyy/zzz.json   →  POST /api/xxx/yyy/zzz
+```
+
+- 文件路径（去掉 `mock/` 前缀和 `.json` 后缀）= 接口完整路径
+- 请求方法不限（GET/POST 均匹配同一文件）
+- 返回数据会自动注入 `"mock": true` 标记字段
+- 找不到对应 `.json` 文件的请求，自动 fallback 到 `devServer.proxy` 代理
+
+**空文件自动抓取**：创建一个 0 字节的空 `.json` 文件，首次请求时自动转发到真实代理接口获取 response 并写入文件，后续请求直接返回 mock 数据。重新抓取只需清空文件内容。
+
+**文件监听热更新**：`mock/` 目录下的 `.json` 文件增删改会自动触发重新收集，无需重启 dev server。
+
 ## License
 
 MIT

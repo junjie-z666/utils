@@ -69,11 +69,11 @@
  * 刷新页面即可拿到最新数据。
  */
 
-const fs = require('fs')
-const path = require('path')
-const http = require('http')
-const https = require('https')
-const { URL } = require('url')
+import fs from 'fs'
+import path from 'path'
+import http from 'http'
+import https from 'https'
+import { URL } from 'url'
 const IS_DEBUG = process.env.IS_DEBUG_LOG === 'true'
 /**
  * 递归收集 mock 目录下的所有 .json 文件
@@ -298,6 +298,6 @@ function setupMock(devServer, appRoot, proxyPaths) {
   }
 }
 
-module.exports = {
+export {
   setupMock,
 }

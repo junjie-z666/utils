@@ -1,6 +1,6 @@
 {
   "name": "@azsxdc12356/utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TypeScript utility functions and React Hooks",
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -12,6 +12,10 @@
     "./hooks": {
       "types": "./dist/hooks/index.d.ts",
       "import": "./dist/hooks/index.js"
+    },
+    "./mockMiddleWare": {
+      "types": "./dist/node/mockMiddleWare.d.ts",
+      "import": "./dist/node/mockMiddleWare.js"
     }
   },
   "files": [
